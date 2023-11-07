@@ -50,12 +50,12 @@ def wordFinder(lottery):
     """
     for i in wordMemory:
         if df.iat[lottery, 1] == i:
-            lottery = random.randint(df.shape[0]-10, df.shape[0]-1)
+            lottery = random.randint(df.shape[0]-12, df.shape[0]-1)
             return(wordFinder(lottery))
     return lottery
 
-for i in range(10):
-    lottery = wordFinder(random.randint(df.shape[0]-10, df.shape[0]-1))
+for i in range(12):
+    lottery = wordFinder(random.randint(df.shape[0]-12, df.shape[0]-1))
     wordMemory.append(df.iat[lottery, 1])
     print("")
     print(Fore.MAGENTA + df.iat[lottery, 1] + Fore.RESET)
@@ -66,12 +66,12 @@ for i in range(10):
     else:
         print("The spelling I am looking for is " + Fore.CYAN + df.iat[lottery, 0] + Fore.RESET + " , you keyed in " + Fore.RED + userInput + Fore.RESET)
 
-if resultTracker == 10:
-    print(f"Hey, you scored {resultTracker}/10! You are the BEST!")
-elif resultTracker > 7:
-    print(f"Hey, you scored {resultTracker}/10! Well done!")
+if resultTracker == 12:
+    print(f"Hey, you scored {resultTracker}/12! You are the BEST!")
+elif resultTracker > 9:
+    print(f"Hey, you scored {resultTracker}/12! Well done!")
 else:
-    print(f"Hey, you scored {resultTracker}/10! Keep trying, you will get there :)")
+    print(f"Hey, you scored {resultTracker}/12! Keep trying, you will get there :)")
 
 # Stop timer
 end = time.time()
