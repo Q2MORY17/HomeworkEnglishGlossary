@@ -81,7 +81,7 @@ for i in range(lengthOfGlossary):
     print("Förslag: "+ Fore.YELLOW + f"{possibleAnswers[0]} | {possibleAnswers[1]} | {possibleAnswers[2]} | {possibleAnswers[3]}" + Fore.RESET)
     userInput = str(input("Skriv den korrekta orden som matchar bergreppet ovan: "))
     if userInput.capitalize() == df.iat[lottery, 0]:
-        print("Bra gjort, " + Fore.GREEN + df.iat[lottery, 0] + Fore.RESET + " är korrekt. Försätt så!")
+        print("Bra gjort, " + Fore.GREEN + df.iat[lottery, 0] + Fore.RESET + " är korrekt. Forsätt så!")
         resultTracker += 1
     else:
         print("Orden förväntad är " + Fore.CYAN + df.iat[lottery, 0] + Fore.RESET + " , du skrev " + Fore.RED + userInput + Fore.RESET)
