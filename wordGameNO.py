@@ -31,7 +31,24 @@ df = pd.read_csv(r'C:/Users/kent1/Documents/ThéodoresHomeworkEnglish/NOBegrepp.
 # Declare variables
 resultTracker = 0
 wordMemory = []
+possibleAnswers = []
 lottery = 0
+lengthOfGlossary = 17
+
+def answerHint(lottery): # Say lottery = 3
+    possibleNumberGenerator= [lottery]
+    for i in range(3):
+        entryNonEqualToLottery = random.randint(df.shape[0]-lengthOfGlossary, df.shape[0]-1)
+        while entryNonEqualToLottery == lottery:
+            entryNonEqualToLottery = random.randint(df.shape[0]-lengthOfGlossary, df.shape[0]-1)
+        if i == 0:
+            possibleNumberGenerator.append(entryNonEqualToLottery)
+        else:
+            while entryNonEqualToLottery in possibleNumberGenerator:
+                entryNonEqualToLottery = random.randint(df.shape[0]-lengthOfGlossary, df.shape[0]-1)
+            possibleNumberGenerator.append(entryNonEqualToLottery)
+        random.shuffle(possibleNumberGenerator)
+    return [df.iat[possibleNumberGenerator[0], 0], df.iat[possibleNumberGenerator[1], 0], df.iat[possibleNumberGenerator[2], 0], df.iat[possibleNumberGenerator[3], 0]]
 
 def wordFinder(lottery):
     """
@@ -50,28 +67,31 @@ def wordFinder(lottery):
     """
     for i in wordMemory:
         if df.iat[lottery, 1] == i:
-            lottery = random.randint(df.shape[0]-17, df.shape[0]-1)
+            lottery = random.randint(df.shape[0]-lengthOfGlossary, df.shape[0]-1)
             return(wordFinder(lottery))
     return lottery
 
-for i in range(17):
-    lottery = wordFinder(random.randint(df.shape[0]-17, df.shape[0]-1))
+for i in range(lengthOfGlossary):
+    possibleAnswers.clear()
+    lottery = wordFinder(random.randint(df.shape[0]-lengthOfGlossary, df.shape[0]-1))
     wordMemory.append(df.iat[lottery, 1])
     print("")
     print(Fore.MAGENTA + df.iat[lottery, 1] + Fore.RESET)
-    userInput = str(input("Skriv orden som matchar bergreppet ovan: "))
+    possibleAnswers = answerHint(lottery)
+    print("Förslag: "+ Fore.YELLOW + f"{possibleAnswers[0]} | {possibleAnswers[1]} | {possibleAnswers[2]} | {possibleAnswers[3]}" + Fore.RESET)
+    userInput = str(input("Skriv den korrekta orden som matchar bergreppet ovan: "))
     if userInput.capitalize() == df.iat[lottery, 0]:
         print("Bra gjort, " + Fore.GREEN + df.iat[lottery, 0] + Fore.RESET + " är korrekt. Försätt så!")
         resultTracker += 1
     else:
         print("Orden förväntad är " + Fore.CYAN + df.iat[lottery, 0] + Fore.RESET + " , du skrev " + Fore.RED + userInput + Fore.RESET)
 
-if resultTracker == 17:
-    print(f"Hej, du fick {resultTracker}/17! Du är BÄST!")
-elif resultTracker > 13:
-    print(f"Hej, du fick {resultTracker}/17! Bra jobbat!")
+if resultTracker == lengthOfGlossary:
+    print(f"Hej, du fick {resultTracker}/{lengthOfGlossary}! Du är BÄST!\n")
+elif resultTracker > lengthOfGlossary-4:
+    print(f"Hej, du fick {resultTracker}/{lengthOfGlossary}! Bra jobbat!\n")
 else:
-    print(f"Hej, du fick {resultTracker}/17! Försök igen, du kommer att lyckas :)")
+    print(f"Hej, du fick {resultTracker}/{lengthOfGlossary}! Försök igen, du kommer att lyckas :)\n")
 
 # Stop timer
 end = time.time()
