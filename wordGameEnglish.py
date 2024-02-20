@@ -32,7 +32,7 @@ df = pd.read_csv(r'C:/Users/kent1/Documents/ThéodoresHomeworkEnglish/glossary.c
 resultTracker = 0
 wordMemory = []
 lottery = 0
-lengthOfThisWeeksEnglishGlossary = 13
+lengthOfThisWeeksEnglishGlossary = 11
 
 def wordFinder(lottery):
     """
@@ -65,7 +65,7 @@ for i in range(lengthOfThisWeeksEnglishGlossary):
         print("Well done! You spelt " + Fore.GREEN + df.iat[lottery, 0] + Fore.RESET + " correctly. Keep it up!")
         resultTracker += 1
     else:
-        print("The spelling I am looking for is " + Fore.CYAN + df.iat[lottery, 0] + Fore.RESET + " , you keyed in " + Fore.RED + userInput + Fore.RESET)
+        print("The spelling I am looking for is " + Fore.CYAN + df.iat[lottery, 0] + Fore.RESET + ", you keyed in " + Fore.RED + userInput + Fore.RESET)
 
 if resultTracker == lengthOfThisWeeksEnglishGlossary:
     print(f"Hey, you scored {resultTracker}/{lengthOfThisWeeksEnglishGlossary}! You are the BEST!")
