@@ -33,7 +33,7 @@ resultTracker = 0
 wordMemory = []
 possibleAnswers = []
 lottery = 0
-lengthOfNOGlossary = 17
+lengthOfNOGlossary = 15
 
 def answerHint(lottery): # Say lottery = 3
     possibleNumberGenerator= [lottery]
