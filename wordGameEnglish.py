@@ -32,7 +32,7 @@ df = pd.read_csv(r'C:/Users/kent1/Documents/ThéodoresHomeworkEnglish/glossary.c
 resultTracker = 0
 wordMemory = []
 lottery = 0
-lengthOfThisWeeksEnglishGlossary = 9
+lengthOfThisWeeksEnglishGlossary = 12
 
 def wordFinder(lottery):
     """
