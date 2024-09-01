@@ -33,7 +33,7 @@ resultTracker = 0
 wordMemory = []
 possibleAnswers = []
 lottery = 0
-lengthOfSvenskaGlossary = 20
+lengthOfSvenskaGlossary = 10
 
 def answerHint(lottery): # Say lottery = 3
     possibleNumberGenerator= [lottery]
