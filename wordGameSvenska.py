@@ -84,7 +84,7 @@ for i in range(lengthOfSvenskaGlossary):
         print("Bra gjort, " + Fore.GREEN + df.iat[lottery, 0] + Fore.RESET + " är korrekt. Forsätt så!")
         resultTracker += 1
     else:
-        print("Orden förväntad är " + Fore.CYAN + df.iat[lottery, 0] + Fore.RESET + " , du skrev " + Fore.RED + userInput + Fore.RESET)
+        print("Orden förväntad är " + Fore.CYAN + df.iat[lottery, 0] + Fore.RESET + ", du skrev " + Fore.RED + userInput + Fore.RESET)
 
 if resultTracker == lengthOfSvenskaGlossary:
     print(f"Hej, du fick {resultTracker}/{lengthOfSvenskaGlossary}! Du är BÄST!\n")
