@@ -29,10 +29,10 @@ init()
 df = pd.read_csv(r'C:/Users/kent1/Documents/ThéodoresHomeworkEnglish/glossary.csv')
 
 # Declare variables
-resultTracker = 0
-wordMemory = []
-lottery = 0
-lengthOfThisWeeksEnglishGlossary = 7
+resultTracker = 0   # Initialize
+wordMemory = []     # Initialize
+lottery = 0         # Initialize
+lengthOfThisWeeksEnglishGlossary = 15  # Enter count of words for the week's glossary
 
 def wordFinder(lottery):
     """
