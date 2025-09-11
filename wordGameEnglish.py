@@ -32,7 +32,7 @@ df = pd.read_csv(r'C:/Users/kent1/Documents/ThéodoresHomeworkEnglish/glossary.c
 resultTracker = 0   # Initialize
 wordMemory = []     # Initialize
 lottery = 0         # Initialize
-lengthOfThisWeeksEnglishGlossary = 19  # Enter count of words for the week's glossary
+lengthOfThisWeeksEnglishGlossary = 13  # Enter count of words for the week's glossary
 
 def wordFinder(lottery):
     """
@@ -61,7 +61,7 @@ for i in range(lengthOfThisWeeksEnglishGlossary):
     print("")
     print(Fore.MAGENTA + df.iat[lottery, 1] + Fore.RESET)
     userInput = str(input("Type the english translation of the above word: "))
-    if userInput.capitalize() == df.iat[lottery, 0]:
+    if userInput.lower() == df.iat[lottery, 0]:
         print("Well done! You spelt " + Fore.GREEN + df.iat[lottery, 0] + Fore.RESET + " correctly. Keep it up!")
         resultTracker += 1
     else:
