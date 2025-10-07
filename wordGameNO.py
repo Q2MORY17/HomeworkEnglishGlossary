@@ -9,7 +9,7 @@ import os
 # Clearing the screen - Windows
 os.system('cls')
 
-def NewPlayer(name = 'Théodore'):
+def NewPlayer(name = 'Élise'):
     newName = input(f'Tryck "Enter" om du är {name} annars, skriv ditt namn här och sen tryck "Enter": ')
     if newName == "":
         return name
