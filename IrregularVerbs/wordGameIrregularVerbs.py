@@ -4,6 +4,8 @@ import time
 from datetime import datetime
 from pathlib import Path
 import csv
+import os
+from colorama import init, Fore, Style
 
 REPO_DIR = Path(__file__).resolve().parents[1]
 DATA_FILE = REPO_DIR / "IrregularVerbs" / "IrregularVerbs.txt"
@@ -71,47 +73,59 @@ def matches(expected: str, given: str) -> bool:
     alternatives = [a for a in alternatives if a]
     return given_n in alternatives
 
+def clear_screen():
+    """Cross-platform terminal clear."""
+    os.system('cls' if os.name == 'nt' else 'clear')
+
 def prompt_name(default="Théodore"):
     newName = input(f"Press Enter if you are {default} otherwise enter your name and press Enter: ").strip()
     return default if newName == "" else newName.capitalize()
 
 def list_this_weeks(entries):
+    clear_screen()
     print("\nThis week's irregular verbs:")
     print("Infinitiv | Preteritum | Perfekt particip")
     print("-" * 60)
     for inf, pret, perf in entries:
         print(f"{inf} | {pret} | {perf}")
     print()
+    input("Press Enter to return to menu...")
 
 def run_game(player_name, entries):
+    clear_screen()
     random.shuffle(entries)
     score = 0.0  # half-point increments: each correct answer = 0.5
-    total_possible = len(entries) * 2 * 0.5  # equals number of words * 1.0 (but we'll report as halves)
     print(f"\nStarting game for {player_name}. You will be asked for preteritum and perfekt particip for each infinitive.")
     input("Press Enter to begin...")
     start = time.time()
     for infinitiv, preteritum, perfekt in entries:
-        print("\nInfinitive:", infinitiv)
+        clear_screen()
+        print(f"Infinitive: {infinitiv}")
         a1 = input("Preteritum: ").strip()
         a2 = input("Perfekt particip: ").strip()
         if matches(preteritum, a1):
             score += 0.5
-            print("  Preteritum: " + "Correct")
+            print("  Preteritum: " + Fore.GREEN + "Correct" + Fore.RESET)
         else:
-            print("  Preteritum: " + f"Incorrect (expected: {preteritum})")
+            # show incorrect in red, and expected spelling highlighted in cyan + bold
+            print("  Preteritum: " + Fore.RED + "Incorrect" + Fore.RESET + " (expected: " +
+                  Fore.CYAN + Style.BRIGHT + preteritum + Style.NORMAL + Fore.RESET + ")")
         if matches(perfekt, a2):
             score += 0.5
-            print("  Perfekt particip: " + "Correct")
+            print("  Perfekt particip: " + Fore.GREEN + "Correct" + Fore.RESET)
         else:
-            print("  Perfekt particip: " + f"Incorrect (expected: {perfekt})")
+            print("  Perfekt particip: " + Fore.RED + "Incorrect" + Fore.RESET + " (expected: " +
+                  Fore.CYAN + Style.BRIGHT + perfekt + Style.NORMAL + Fore.RESET + ")")
+        input("Press Enter for next word...")
     end = time.time()
     elapsed = round(end - start, 2)
+    clear_screen()
     print(f"\nFinished. Time: {elapsed}s. Score: {score} out of {len(entries)*1.0} (half-point increments).")
-    # Append to tracker file: name,date,time_seconds,score,total_possible
     TRACKER_FILE.parent.mkdir(parents=True, exist_ok=True)
     with TRACKER_FILE.open("a", encoding="utf-8") as tf:
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         tf.write(f"{player_name},{now},{elapsed},{score},{len(entries)*1.0}\n")
+    input("Press Enter to return to menu...")
     return score, elapsed
 
 def menu():
@@ -124,23 +138,25 @@ def menu():
         print("No valid entries parsed from data file.")
         return
     while True:
+        clear_screen()
         print("\nIrregular Verbs - Menu")
         print("1) Play game")
-        print("2) List this week's irregular verbs")
+        print("2) List this week's irregular verbs (infinitives + forms)")
         print("3) Quit")
         choice = input("Choose 1, 2 or 3: ").strip()
         if choice == "1":
             player = prompt_name()
-            # Make a copy limited to max_words and randomized inside run_game
             selected = entries.copy()
             run_game(player, selected)
         elif choice == "2":
             list_this_weeks(entries)
         elif choice == "3":
+            clear_screen()
             print("Goodbye.")
             break
         else:
             print("Invalid choice. Try again.")
+            input("Press Enter to continue...")
 
 if __name__ == "__main__":
     menu()
