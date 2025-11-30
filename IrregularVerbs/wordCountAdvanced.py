@@ -60,12 +60,11 @@ def main(args):
     else:
         print(f"No change in count ({new_count})")
 
-    def get_new_count(data_file: Path = None) -> int:
-        """
-        Return the current count of entries. Can be imported by other scripts.
-        """
-        data_path = Path(data_file) if data_file else DEFAULT_DATA
-        return count_entries(data_path)
+NEW_COUNT = 18  # <-- manually change this number to the desired max words
+
+def get_new_count() -> int:
+    """Return the manually configured count of irregular verb entries."""
+    return int(NEW_COUNT)
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser(description="Count irregular verbs and record diff vs previous run.")
