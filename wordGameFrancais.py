@@ -32,7 +32,7 @@ df = pd.read_csv(r'C:/Users/kent1/Documents/ThéodoresHomeworkEnglish/listeDeMot
 resultTracker = 0   # Initialize
 wordMemory = []     # Initialize
 lottery = 0         # Initialize
-lengthOfThisWeeksEnglishGlossary = 14  # Enter count of words for the week's glossary
+lengthOfThisWeeksEnglishGlossary = 18  # Enter count of words for the week's glossary
 
 print("voici le 'ç' que tu peux copier/coller si tu en as besoin: ç")
 

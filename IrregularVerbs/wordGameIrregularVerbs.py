@@ -1,37 +1,33 @@
+from datetime import datetime
+from pathlib import Path
 import sys
 import random
 import time
-from datetime import datetime
-from pathlib import Path
-import csv
 import os
+import csv
 from colorama import init, Fore, Style
 
 REPO_DIR = Path(__file__).resolve().parents[1]
 DATA_FILE = REPO_DIR / "IrregularVerbs" / "IrregularVerbs.txt"
 TRACKER_FILE = REPO_DIR / "IrregularVerbs" / "IrregularVerbTracker.txt"
 
-# Try to import get_new_count from wordCountAdvanced; if not available, fallback to counting lines here
+init()  # colorama
+
+# Try to import get_new_count from wordCountAdvanced; fallback to simple constant
 try:
     sys.path.insert(0, str(REPO_DIR / "IrregularVerbs"))
     from wordCountAdvanced import get_new_count  # type: ignore
 except Exception:
-    def get_new_count(data_file: Path = None) -> int:
-        data_path = Path(data_file) if data_file else DATA_FILE
-        if not data_path.exists():
-            return 0
-        count = 0
-        with data_path.open(encoding="utf-8") as fh:
-            for i, raw in enumerate(fh):
-                line = raw.strip()
-                if not line:
-                    continue
-                if line.startswith("//"):
-                    continue
-                if i == 0 and "infinitiv" in line.lower():
-                    continue
-                count += 1
-        return count
+    def get_new_count() -> int:
+        # change this value manually if you don't use wordCountAdvanced.py
+        return 18
+
+def clear_screen():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+def prompt_name(default="Théodore"):
+    newName = input(f"Press Enter if you are {default} otherwise enter your name and press Enter: ").strip()
+    return default if newName == "" else newName.capitalize()
 
 def parse_irregulars(max_items: int):
     entries = []
@@ -39,51 +35,45 @@ def parse_irregulars(max_items: int):
         return entries
     with DATA_FILE.open(encoding="utf-8") as fh:
         reader = csv.reader(fh)
+        all_entries = []
         for i, row in enumerate(reader):
             if not row:
                 continue
-            # Skip comment header line if present
             joined = ",".join(row).strip()
             if joined.startswith("//"):
                 continue
             if i == 0 and "infinitiv" in joined.lower():
                 continue
-            # Ensure at least 3 columns; extra commas in fields handled by csv reader
             if len(row) < 3:
                 continue
             infinitiv = row[0].strip()
             preteritum = row[1].strip().strip('"')
             perfekt = row[2].strip().strip('"')
-            entries.append((infinitiv, preteritum, perfekt))
-            if len(entries) >= max_items:
-                break
-    return entries
+            all_entries.append((infinitiv, preteritum, perfekt))
+    if max_items <= 0:
+        return []
+    if max_items >= len(all_entries):
+        return all_entries
+    return all_entries[-max_items:]  # last N entries
 
 def normalize_answers(s: str):
     return s.strip().lower()
 
 def matches(expected: str, given: str) -> bool:
     given_n = normalize_answers(given)
-    # expected may contain alternatives separated by '/' or ';'
-    alternatives = [alt.strip().lower() for sep in ("/", ";") for alt in expected.split(sep)]
-    # also include expected as-is if no split happened
-    if not alternatives:
-        alternatives = [expected.strip().lower()]
-    # remove empty alternatives
-    alternatives = [a for a in alternatives if a]
-    return given_n in alternatives
-
-def clear_screen():
-    """Cross-platform terminal clear."""
-    os.system('cls' if os.name == 'nt' else 'clear')
-
-def prompt_name(default="Théodore"):
-    newName = input(f"Press Enter if you are {default} otherwise enter your name and press Enter: ").strip()
-    return default if newName == "" else newName.capitalize()
+    # split alternatives on / or ;
+    alts = []
+    for part in expected.replace(';', '/').split('/'):
+        part = part.strip().lower()
+        if part:
+            alts.append(part)
+    if not alts:
+        alts = [expected.strip().lower()]
+    return given_n in alts
 
 def list_this_weeks(entries):
     clear_screen()
-    print("\nThis week's irregular verbs:")
+    print("\nThis week's irregular verbs (all rows):\n")
     print("Infinitiv | Preteritum | Perfekt particip")
     print("-" * 60)
     for inf, pret, perf in entries:
@@ -91,42 +81,54 @@ def list_this_weeks(entries):
     print()
     input("Press Enter to return to menu...")
 
+def wordFinder(lottery, entries, wordMemory):
+    # ensure unique infinitive in wordMemory, re-roll if duplicate
+    if entries[lottery][0] in wordMemory:
+        lottery = random.randint(0, len(entries) - 1)
+        return wordFinder(lottery, entries, wordMemory)
+    return lottery
+
 def run_game(player_name, entries):
     clear_screen()
-    random.shuffle(entries)
-    score = 0.0  # half-point increments: each correct answer = 0.5
+    init()
+    resultTracker = 0.0  # half-point increments
+    wordMemory = []
+    length = len(entries)
     print(f"\nStarting game for {player_name}. You will be asked for preteritum and perfekt particip for each infinitive.")
     input("Press Enter to begin...")
     start = time.time()
-    for infinitiv, preteritum, perfekt in entries:
+    for i in range(length):
+        lottery = wordFinder(random.randint(0, length - 1), entries, wordMemory)
+        inf, pret, perf = entries[lottery]
+        wordMemory.append(inf)
         clear_screen()
-        print(f"Infinitive: {infinitiv}")
+        print(Fore.MAGENTA + inf + Fore.RESET)
         a1 = input("Preteritum: ").strip()
         a2 = input("Perfekt particip: ").strip()
-        if matches(preteritum, a1):
-            score += 0.5
+        if matches(pret, a1):
+            resultTracker += 0.5
             print("  Preteritum: " + Fore.GREEN + "Correct" + Fore.RESET)
         else:
-            # show incorrect in red, and expected spelling highlighted in cyan + bold
             print("  Preteritum: " + Fore.RED + "Incorrect" + Fore.RESET + " (expected: " +
-                  Fore.CYAN + Style.BRIGHT + preteritum + Style.NORMAL + Fore.RESET + ")")
-        if matches(perfekt, a2):
-            score += 0.5
+                  Fore.CYAN + Style.BRIGHT + pret + Style.NORMAL + Fore.RESET + ")")
+        if matches(perf, a2):
+            resultTracker += 0.5
             print("  Perfekt particip: " + Fore.GREEN + "Correct" + Fore.RESET)
         else:
             print("  Perfekt particip: " + Fore.RED + "Incorrect" + Fore.RESET + " (expected: " +
-                  Fore.CYAN + Style.BRIGHT + perfekt + Style.NORMAL + Fore.RESET + ")")
+                  Fore.CYAN + Style.BRIGHT + perf + Style.NORMAL + Fore.RESET + ")")
         input("Press Enter for next word...")
     end = time.time()
-    elapsed = round(end - start, 2)
+    timeOfPlay = round(end - start, 2)
     clear_screen()
-    print(f"\nFinished. Time: {elapsed}s. Score: {score} out of {len(entries)*1.0} (half-point increments).")
+    total_possible = float(length)  # each word can give 1.0 (two halves)
+    print(f"\nFinished. Time: {timeOfPlay}s. Score: {resultTracker} out of {total_possible} (half-point increments).")
     TRACKER_FILE.parent.mkdir(parents=True, exist_ok=True)
     with TRACKER_FILE.open("a", encoding="utf-8") as tf:
-        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        tf.write(f"{player_name},{now},{elapsed},{score},{len(entries)*1.0}\n")
+        now = datetime.now().strftime('%Y-%m-%d,%H:%M:%S')
+        tf.write(player_name + "," + now + "," + str(resultTracker) + "," + str(timeOfPlay) + "\n")
     input("Press Enter to return to menu...")
-    return score, elapsed
+    return resultTracker, timeOfPlay
 
 def menu():
     max_words = get_new_count()
@@ -141,13 +143,12 @@ def menu():
         clear_screen()
         print("\nIrregular Verbs - Menu")
         print("1) Play game")
-        print("2) List this week's irregular verbs (infinitives + forms)")
+        print("2) List this week's irregular verbs (all rows)")
         print("3) Quit")
         choice = input("Choose 1, 2 or 3: ").strip()
         if choice == "1":
             player = prompt_name()
-            selected = entries.copy()
-            run_game(player, selected)
+            run_game(player, entries.copy())
         elif choice == "2":
             list_this_weeks(entries)
         elif choice == "3":
