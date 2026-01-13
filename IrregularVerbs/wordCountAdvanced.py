@@ -60,7 +60,7 @@ def main(args):
     else:
         print(f"No change in count ({new_count})")
 
-NEW_COUNT = 18  # <-- manually change this number to the desired max words
+NEW_COUNT = 13  # <-- manually change this number to the desired max words
 
 def get_new_count() -> int:
     """Return the manually configured count of irregular verb entries."""
